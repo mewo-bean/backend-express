@@ -3,60 +3,35 @@ const router = express.Router();
 
 
 class Users {
+	counter = 2;
 	constructor() {
-		this.items = [
-		{
-		"id": 0,
-		"name": "Bezrukova Anna"
-		}, 
+		this.items =[
+			{
+			"id": 1,
+			"name": "Bezrukova Anna"
+			},
+			{
+			"id": 2,
+			"name": "Tsiganov Artyom"
+			} 
+		]
+	}
 
-		{
-		"id": 1,
-		"name": "Artyom Tsiganov"
-		}
-		];
+	add(parsed_json) {
+		this.items.push({"id": ++this.counter, "name": parsed_json.name});
 	}
 }
 
+const user_class = new Users();
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
-<<<<<<< Updated upstream
-  const users1 = new Users();
-  res.send(users1.items);
-=======
-  res.send('Hello, world!');
-  users = [2]
+  res.send(user_class.items);
 });
 
-class Users {
-    constructor() {
-      items =[
-          {
-            "id": 1,
-            "name": "Bezrukova Anna"
-          },
-          {
-            "id": 2,
-            "name": "Tsiganov Artyom"
-          } 
-        
 
-      ]
-    }
-
-    add(id, name) {
-      items.push(name)
-    }
-}
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  user = new Users();
-  name = req.body
-  user.
-  
->>>>>>> Stashed changes
+router.post('/', function(req, res, next) {
+	user_class.add(req.body);
+	res.status(201).json(user_class);
 });
 
 module.exports = router;
