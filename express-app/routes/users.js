@@ -20,12 +20,30 @@ class Users {
 	add(parsed_json) {
 		this.items.push({"id": ++this.counter, "name": parsed_json.name});
 	}
+
+	get(id) {
+		for (const item of this.items) {
+			if (item.id === id) {
+				return item;
+			}
+		}
+	}
 }
 
 const user_class = new Users();
 
+router.get('/:id', function(req, res, next) {
+	const result = user_class.get(parseInt(req.params.id));
+	if (result) { 
+		res.send(result);
+	} else {
+		res.status(404).json();
+	}
+});
+
+
 router.get('/', function(req, res, next) {
-  res.send(user_class.items);
+	res.send(user_class.items);
 });
 
 
