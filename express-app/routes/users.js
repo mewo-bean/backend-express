@@ -2,54 +2,38 @@ const express = require('express');
 const router = express.Router();
 
 
-class Users {
-	counter = 2;
-	constructor() {
-		this.items =[
-			{
-			"id": 1,
-			"name": "Bezrukova Anna"
-			},
-			{
-			"id": 2,
-			"name": "Tsiganov Artyom"
-			} 
-		]
-	}
+const sqlite3 = require('sqlite3').verbose()
+const db = new sqlite3.Database('mydb.db');
+db.run(`CREATE TABLE IF NOT EXISTS users (
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
+   name text)`);
 
-	add(parsed_json) {
-		this.items.push({"id": ++this.counter, "name": parsed_json.name});
-	}
-
-	get(id) {
-		for (const item of this.items) {
-			if (item.id === id) {
-				return item;
-			}
-		}
-	}
-}
-
-const user_class = new Users();
 
 router.get('/:id', function(req, res, next) {
-	const result = user_class.get(parseInt(req.params.id));
-	if (result) { 
-		res.send(result);
+	db.all(`SELECT id, name FROM users WHERE id = ${req.params.id}`, [], (err, rows) => {
+	if (err) {
+		console.log(err);
 	} else {
-		res.status(404).json();
+		res.send(rows);
 	}
+	});
 });
 
 
 router.get('/', function(req, res, next) {
-	res.send(user_class.items);
+	db.all("SELECT id, name FROM users", [], (err, rows) => {
+	if (err) {
+		console.log(err);
+	} else {
+		res.send(rows);
+	}
+	});
 });
 
 
 router.post('/', function(req, res, next) {
-	user_class.add(req.body);
-	res.status(201).json(user_class);
+	const insert = "INSERT INTO users (name) VALUES (?)";
+	db.run(insert, [req.body.name]);
 });
 
 module.exports = router;
